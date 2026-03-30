@@ -2,14 +2,15 @@ pipeline {
     agent any
 
     environment {
+        // Name must match your NodeJS installation in Jenkins Global Tool Configuration
         NODEJS_HOME = tool name: 'NodeJS', type: 'NodeJSInstallation'
-        PATH = "${env.NODEJS_HOME}/bin:${env.PATH}"
+        PATH = "${env.NODEJS_HOME}\\bin;${env.PATH}"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout your GitHub repo
+                echo 'Checking out Git repository...'
                 git branch: 'main', url: 'https://github.com/mruthiks1/my-node-app.git'
             }
         }
@@ -17,21 +18,22 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing Node.js dependencies...'
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Build & Run') {
             steps {
-                echo 'Building and running the app...'
-                sh 'node index.js'
+                echo 'Running the app...'
+                // Use start /B to run in background if needed
+                bat 'node index.js'
             }
         }
 
         stage('Archive Artifacts') {
             steps {
-                echo 'Archiving JavaScript files as build artifacts...'
-                archiveArtifacts artifacts: '**/*.js', fingerprint: true
+                echo 'Archiving JavaScript files...'
+                archiveArtifacts artifacts: '**\\*.js', fingerprint: true
             }
         }
     }
